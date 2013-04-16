@@ -3220,6 +3220,8 @@ BEGIN
     IDS_ZOOM_200                        "200%"
     IDS_ZOOM_AUTOFIT                    "Auto Fit"
     IDS_ZOOM_AUTOFIT_LARGER             "Auto Fit (Larger Only)"
+    IDS_ZOOM_720P                       "720p"
+    IDS_ZOOM_1080P                      "1080p"
     IDS_SPEEDSTEP_AUTO                  "Auto"
 END
 

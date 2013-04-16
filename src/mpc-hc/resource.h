@@ -1490,6 +1490,8 @@
 #define IDS_RFS_ENCRYPTED               41453
 #define IDS_RFS_MISSING_VOLS            41454
 #define IDS_OSD_D3DFS_REMINDER          41455
+#define IDS_ZOOM_720P                   41456
+#define IDS_ZOOM_1080P                  41457
 
 // Next default values for new objects
 // 

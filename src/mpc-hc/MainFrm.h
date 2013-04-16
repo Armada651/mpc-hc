@@ -160,7 +160,9 @@ class CMainFrame : public CFrameWnd, public CDropTarget
     enum {
         ZOOM_DEFAULT_LEVEL = 0,
         ZOOM_AUTOFIT = -1,
-        ZOOM_AUTOFIT_LARGER = -2
+        ZOOM_AUTOFIT_LARGER = -2,
+        ZOOM_720P = -3,
+        ZOOM_1080P = -4
     };
 
     friend class CPPageFileInfoSheet;

@@ -140,6 +140,8 @@ BOOL CPPagePlayback::OnInitDialog()
     m_zoomlevelctrl.AddString(ResStr(IDS_ZOOM_200));
     m_zoomlevelctrl.AddString(ResStr(IDS_ZOOM_AUTOFIT));
     m_zoomlevelctrl.AddString(ResStr(IDS_ZOOM_AUTOFIT_LARGER));
+    m_zoomlevelctrl.AddString(ResStr(IDS_ZOOM_720P));
+    m_zoomlevelctrl.AddString(ResStr(IDS_ZOOM_1080P));
     CorrectComboListWidth(m_zoomlevelctrl);
 
     // set the spinner acceleration value
