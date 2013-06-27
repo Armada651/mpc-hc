@@ -708,6 +708,7 @@
 #define IDC_PPAGECAPTURE_ST10           22078
 #define IDC_PPAGECAPTURE_ST11           22079
 #define IDC_PPAGECAPTURE_ST12           22080
+#define IDC_VIDRND_AVAILABLE            22081
 #define ID_SUB_DELAY_DOWN               24000
 #define ID_SUB_DELAY_UP                 24001
 #define IDS_MPLAYERC_104                24002
@@ -1459,7 +1460,7 @@
 #define IDS_RFS_COMPRESSED              41452
 #define IDS_RFS_ENCRYPTED               41453
 #define IDS_RFS_MISSING_VOLS            41454
-#define IDS_OSD_D3DFS_REMINDER          41455
+#define IDS_PPAGE_OUTPUT_AVAILABLE      41455
 #define IDS_PPAGE_CAPTURE_FG0           57345
 #define IDS_PPAGE_CAPTURE_FG1           57346
 #define IDS_PPAGE_CAPTURE_FG2           57347
