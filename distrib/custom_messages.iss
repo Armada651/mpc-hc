@@ -157,6 +157,8 @@ en.tsk_ResetSettings=Reset settings
 en.types_DefaultInstallation=Default installation
 en.types_CustomInstallation=Custom installation
 en.ViewChangelog=View Changelog
+en.types_LiteInstallation=Lite installation
+en.comp_lavfilters=LAV Filters
 
 
 

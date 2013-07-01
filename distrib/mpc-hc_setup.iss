@@ -207,14 +207,18 @@ BeveledLabel={#FullAppNameVer}
 
 [Types]
 Name: default;            Description: {cm:types_DefaultInstallation}
+Name: lite;               Description: {cm:types_LiteInstallation}
 Name: custom;             Description: {cm:types_CustomInstallation};                     Flags: iscustom
 
 
 [Components]
-Name: main;               Description: {#app_vername};             Types: default custom; Flags: fixed
-Name: mpciconlib;         Description: {cm:comp_mpciconlib};       Types: default custom
+Name: main;               Description: {#app_vername};             Types: default custom lite; Flags: fixed
+#ifndef MPCHC_LITE
+Name: lavfilters;         Description: {cm:comp_lavfilters};       Types: default custom
+#endif
+Name: mpciconlib;         Description: {cm:comp_mpciconlib};       Types: default custom lite
 #if localize == "true"
-Name: mpcresources;       Description: {cm:comp_mpcresources};     Types: default custom; Flags: disablenouninstallwarning
+Name: mpcresources;       Description: {cm:comp_mpcresources};     Types: default custom lite; Flags: disablenouninstallwarning
 #endif
 
 
@@ -231,9 +235,9 @@ Name: reset_settings;     Description: {cm:tsk_ResetSettings};     GroupDescript
 Source: {#bindir}\Lang\mpcresources.??.dll; DestDir: {app}\Lang; Components: mpcresources; Flags: ignoreversion
 #endif
 #ifndef MPCHC_LITE
-Source: {#bindir}\LAVFilters\*.dll;         DestDir: {app}\LAVFilters;  Components: main;  Flags: ignoreversion
-Source: {#bindir}\LAVFilters\*.ax;          DestDir: {app}\LAVFilters;  Components: main;  Flags: ignoreversion
-Source: {#bindir}\LAVFilters\*.manifest;    DestDir: {app}\LAVFilters;  Components: main;  Flags: ignoreversion
+Source: {#bindir}\LAVFilters\*.dll;         DestDir: {app}\LAVFilters;  Components: lavfilters;  Flags: ignoreversion
+Source: {#bindir}\LAVFilters\*.ax;          DestDir: {app}\LAVFilters;  Components: lavfilters;  Flags: ignoreversion
+Source: {#bindir}\LAVFilters\*.manifest;    DestDir: {app}\LAVFilters;  Components: lavfilters;  Flags: ignoreversion
 #endif
 Source: {#bindir}\D3DCompiler_{#MPC_DX_SDK_NUMBER}.dll; DestDir: {app}; Components: main;  Flags: ignoreversion
 Source: {#bindir}\d3dx9_{#MPC_DX_SDK_NUMBER}.dll;       DestDir: {app}; Components: main;  Flags: ignoreversion
