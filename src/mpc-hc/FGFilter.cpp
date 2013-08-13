@@ -258,6 +258,7 @@ HRESULT CFGFilterRegistry::Create(IBaseFilter** ppBF, CInterfaceList<IUnknown, &
             return E_FAIL;
         }
 
+        pUnks.AddTail(pBF);
         *ppBF = pBF.Detach();
 
         hr = S_OK;
@@ -416,7 +417,16 @@ HRESULT CFGFilterFile::Create(IBaseFilter** ppBF, CInterfaceList<IUnknown, &IID_
 {
     CheckPointer(ppBF, E_POINTER);
 
-    return LoadExternalFilter(m_path, m_clsid, ppBF);
+    CComPtr<IBaseFilter> pBF;
+    HRESULT hr = LoadExternalFilter(m_path, m_clsid, &pBF);
+    if (FAILED(hr)) {
+        return hr;
+    }
+
+    pUnks.AddTail(pBF);
+    *ppBF = pBF.Detach();
+
+    return hr;
 }
 
 //

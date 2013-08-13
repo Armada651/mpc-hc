@@ -102,6 +102,7 @@ public:
             return hr;
         }
 
+        pUnks.AddTail(pBF);
         *ppBF = pBF.Detach();
 
         return hr;

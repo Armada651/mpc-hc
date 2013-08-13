@@ -11975,7 +11975,7 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
         SetupVMR9ColorControl();
 
         // === EVR !
-        m_pGB->FindInterface(__uuidof(IMFVideoDisplayControl), (void**)&m_pMFVDC,  TRUE);
+        m_pGB->FindInterface(__uuidof(IMFVideoDisplayControl), (void**)&m_pMFVDC, TRUE);
         m_pGB->FindInterface(__uuidof(IMFVideoProcessor), (void**)&m_pMFVP, TRUE);
         if (m_pMFVDC) {
             m_pMFVDC->SetVideoWindow(m_pVideoWnd->m_hWnd);
@@ -11985,13 +11985,10 @@ bool CMainFrame::OpenMediaPrivate(CAutoPtr<OpenMediaData> pOMD)
         //does not work at this location
         //need to choose the correct mode (IMFVideoProcessor::SetVideoProcessorMode)
 
-        BeginEnumFilters(m_pGB, pEF, pBF) {
-            if (m_pLN21 = pBF) {
-                m_pLN21->SetServiceState(s.fClosedCaptions ? AM_L21_CCSTATE_On : AM_L21_CCSTATE_Off);
-                break;
-            }
+        m_pGB->FindInterface(__uuidof(IAMLine21Decoder_2), (void**)&m_pLN21, TRUE);
+        if (m_pLN21) {
+            m_pLN21->SetServiceState(s.fClosedCaptions ? AM_L21_CCSTATE_On : AM_L21_CCSTATE_Off);
         }
-        EndEnumFilters;
 
         if (m_fOpeningAborted) {
             throw (UINT)IDS_AG_ABORTED;
