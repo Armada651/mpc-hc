@@ -158,6 +158,7 @@ CSubPicQueue::CSubPicQueue(int nMaxSubPic, BOOL bDisableAnim, ISubPicAllocator* 
     , m_bDisableAnim(bDisableAnim)
     , m_rtQueueMin(0)
     , m_rtQueueMax(0)
+    , m_rtCurrent(0)
     , m_rtInvalidate(0)
     , m_fBreakBuffering(false)
     , m_ThreadEvents()
@@ -249,8 +250,7 @@ STDMETHODIMP_(bool) CSubPicQueue::LookupSubPic(REFERENCE_TIME rtNow, CComPtr<ISu
         CComPtr<ISubPic> pSubPic = m_Queue.GetNext(pos);
         REFERENCE_TIME rtStart = pSubPic->GetStart();
         REFERENCE_TIME rtStop = pSubPic->GetStop();
-        REFERENCE_TIME rtSegmentStop = pSubPic->GetSegmentStop();
-        if (rtNow >= rtStart && rtNow < rtSegmentStop) {
+        if (rtNow >= rtStart) {
             REFERENCE_TIME Diff = rtNow - rtStop;
             if (Diff < rtBestStop) {
                 rtBestStop = Diff;
@@ -264,7 +264,7 @@ STDMETHODIMP_(bool) CSubPicQueue::LookupSubPic(REFERENCE_TIME rtNow, CComPtr<ISu
         }
 #if SUBPIC_TRACE_LEVEL > 2
         else {
-            TRACE(_T("   !!%f->%f"), double(rtStart) / 10000000.0, double(rtSegmentStop) / 10000000.0);
+            TRACE(_T("   !!%f->%f"), double(rtStart) / 10000000.0, double(rtStop) / 10000000.0);
         }
 #endif
 
@@ -331,8 +331,9 @@ REFERENCE_TIME CSubPicQueue::UpdateQueue()
 {
     CAutoLock cQueueLock(&m_csQueueLock);
 
-    REFERENCE_TIME rtNow = m_rtNow;
-    REFERENCE_TIME rtNowCompare = rtNow;
+    // When the renderer is behind we keep the queue behind
+    // the current playback time until we caught up.
+    REFERENCE_TIME rtNow = std::min(m_rtNow, m_rtCurrent);
 
     if (rtNow < m_rtNowLast) {
         m_Queue.RemoveAll();
@@ -373,6 +374,7 @@ REFERENCE_TIME CSubPicQueue::UpdateQueue()
 #endif
         {
             POSITION Iter = m_Queue.GetHeadPosition();
+            REFERENCE_TIME rtNowCompare = rtNow;
             while (Iter) {
                 POSITION ThisPos = Iter;
                 ISubPic* pSubPic = m_Queue.GetNext(Iter);
@@ -441,8 +443,14 @@ DWORD CSubPicQueue::ThreadProc()
         if (SUCCEEDED(GetSubPicProvider(&pSubPicProvider)) && pSubPicProvider
                 && SUCCEEDED(pSubPicProvider->Lock())) {
             for (POSITION pos = pSubPicProvider->GetStartPosition(rtNow, fps);
-                    pos && !m_fBreakBuffering && GetQueueCount() < nMaxSubPic;
+                    !m_fBreakBuffering && GetQueueCount() < nMaxSubPic;
                     pos = pSubPicProvider->GetNext(pos)) {
+                if (!pos) {
+                    // The subtitles have ended, set the current time past the end of playback
+                    m_rtCurrent = LONGLONG_MAX;
+                    break;
+                }
+
                 REFERENCE_TIME rtStart = pSubPicProvider->GetStart(pos, fps);
                 REFERENCE_TIME rtStop = pSubPicProvider->GetStop(pos, fps);
 
@@ -458,6 +466,7 @@ DWORD CSubPicQueue::ThreadProc()
 
                 if (rtNow < rtStop) {
                     REFERENCE_TIME rtCurrent = std::max(rtNow, rtStart);
+                    m_rtCurrent = rtCurrent;
                     bool bIsAnimated = pSubPicProvider->IsAnimated(pos) && !bDisableAnim;
                     while (rtCurrent < rtStop) {
                         SIZE    MaxTextureSize, VirtualSize;
