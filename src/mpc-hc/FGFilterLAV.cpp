@@ -32,6 +32,7 @@
 #include "moreuuids.h"
 #include "../filters/InternalPropertyPage.h"
 #include "../filters/PinInfoWnd.h"
+#include "AppSettings.h"
 
 #define LAV_FILTERS_VERSION_MAJOR      0
 #define LAV_FILTERS_VERSION_MINOR      62
@@ -721,7 +722,17 @@ bool CFGFilterLAVVideo::Settings::GetSettings(CComQIPtr<ILAVVideoSettings> pLAVF
 
     dwDitherMode = pLAVFSettings->GetDitherMode();
 
+    const CAppSettings& s = AfxGetAppSettings();
     for (int i = 0; i < LAVOutPixFmt_NB; ++i) {
+        // Ignore P010 for EVR, Nvidia 344.11 causes EVR
+        // to incorrectly accept this format.
+        if ((LAVOutPixFmts)i == LAVOutPixFmt_P010 &&
+                (s.iDSVideoRendererType == VIDRNDT_DS_EVR ||
+                 s.iDSVideoRendererType == VIDRNDT_DS_EVR_CUSTOM ||
+                 s.iDSVideoRendererType == VIDRNDT_DS_SYNC)) {
+            continue;
+        }
+
         bPixFmts[i] = pLAVFSettings->GetPixelFormat((LAVOutPixFmts)i);
     }
 
@@ -768,6 +779,15 @@ bool CFGFilterLAVVideo::Settings::SetSettings(CComQIPtr<ILAVVideoSettings> pLAVF
 
     for (int i = 0; i < LAVOutPixFmt_NB; ++i) {
         pLAVFSettings->SetPixelFormat((LAVOutPixFmts)i, bPixFmts[i]);
+    }
+
+    // Ignore P010 for EVR, Nvidia 344.11 causes EVR
+    // to incorrectly accept this format.
+    const CAppSettings& s = AfxGetAppSettings();
+    if (s.iDSVideoRendererType == VIDRNDT_DS_EVR ||
+            s.iDSVideoRendererType == VIDRNDT_DS_EVR_CUSTOM ||
+            s.iDSVideoRendererType == VIDRNDT_DS_SYNC) {
+        pLAVFSettings->SetPixelFormat(LAVOutPixFmt_P010, FALSE);
     }
 
     pLAVFSettings->SetHWAccel((LAVHWAccel)dwHWAccel);
