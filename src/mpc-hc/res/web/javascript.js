@@ -3,8 +3,7 @@
    unused:true */
 
 /* global ActiveXObject */
-/* exported controlsInit, positionUpdate, onLoadSnapshot, onAbortErrorSnapshot,
-   onCommand, playerInit */
+/* exported controlsInit, positionUpdate, onCommand, playerInit */
 
 
 var filePath;
@@ -480,26 +479,6 @@ function statusLoop() {
     setTimeout(statusLoop, 500);
 }
 
-var snapshotCounter = 0;
-
-function loadSnapshot() {
-    "use strict";
-    var img = getById("snapshot");
-    if (img) {
-        img.src = "snapshot.jpg" + "?" + snapshotCounter++;
-    }
-}
-
-function onLoadSnapshot() {
-    "use strict";
-    setTimeout(loadSnapshot, 5000);
-}
-
-function onAbortErrorSnapshot() {
-    "use strict";
-    setTimeout(loadSnapshot, 10000);
-}
-
 function onSeek(e) {
     "use strict";
     var left = 0;
@@ -563,7 +542,6 @@ function onCommand(id) {
 function playerInit() {
     "use strict";
     statusLoop();
-    loadSnapshot();
 
     var el = getById("seekbar");
     if (el) {
